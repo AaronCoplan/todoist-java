@@ -340,4 +340,18 @@ public class Todoist {
     public Comment createNewCommentForProject(long id, String content, AttachmentRequest attachmentRequest) {
         return createNewComment(null, id, content, attachmentRequest);
     }
+
+    public Comment getComment(long id) {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments/" + id)
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractComment(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
