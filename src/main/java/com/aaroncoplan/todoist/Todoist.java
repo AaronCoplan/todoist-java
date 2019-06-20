@@ -9,6 +9,9 @@ import java.util.List;
 
 public class Todoist {
 
+    private final int HTTP_OK = 200;
+    private final int HTTP_OK_NO_CONTENT = 204;
+
     private final String URL_BASE = "https://beta.todoist.com/API/v8";
 
     public Todoist(String token) {
@@ -20,7 +23,7 @@ public class Todoist {
         try {
             HttpResponse<String> response = Unirest.get(URL_BASE + "/projects")
                     .asString();
-            if(response.getStatus() != 200) {
+            if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
             return JsonAdapters.extractProjectList(response.getBody());
@@ -34,7 +37,7 @@ public class Todoist {
         try {
             HttpResponse<String> response = Unirest.get(URL_BASE + "/projects/" + id)
                     .asString();
-            if(response.getStatus() != 200) {
+            if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
             return JsonAdapters.extractProject(response.getBody());
@@ -50,7 +53,7 @@ public class Todoist {
                     .header("Content-Type", "application/json")
                     .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
                     .asString();
-            if(response.getStatus() != 200) {
+            if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
             return JsonAdapters.extractProject(response.getBody());
@@ -66,7 +69,7 @@ public class Todoist {
                     .header("Content-Type", "application/json")
                     .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
                     .asString();
-            if(response.getStatus() != 204) {
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
         } catch (Exception e) {
@@ -78,7 +81,7 @@ public class Todoist {
         try {
             HttpResponse<String> response = Unirest.delete(URL_BASE + "/projects/" + id)
                     .asString();
-            if(response.getStatus() != 204) {
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
         } catch (Exception e) {
