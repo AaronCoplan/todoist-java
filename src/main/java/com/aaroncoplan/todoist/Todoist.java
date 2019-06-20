@@ -254,4 +254,18 @@ public class Todoist {
             return null;
         }
     }
+
+    public void updateLabel(long id, String name, Integer order) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/labels/" + id)
+                    .header("Content-Type", "application/json")
+                    .body(JsonAdapters.writeLabelRequest(new LabelRequest(name, order)))
+                    .asString();
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
