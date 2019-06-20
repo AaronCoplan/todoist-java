@@ -1,5 +1,6 @@
 package com.aaroncoplan.todoist;
 
+import com.aaroncoplan.todoist.helpers.CommentRequest;
 import com.aaroncoplan.todoist.helpers.LabelRequest;
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.helpers.TaskRequest;
@@ -312,5 +313,29 @@ public class Todoist {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private Comment createNewComment(Long taskId, Long projectId, String content) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/comments")
+                    .header("Content-Type", "application/json")
+                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(taskId, projectId, content, null)))
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractComment(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Comment createNewCommentForTask(long id, String content) {
+        return createNewComment(id, null, content);
+    }
+
+    public Comment createNewCommentForProject(long id, String content) {
+        return createNewComment(null, id, content);
     }
 }
