@@ -167,6 +167,20 @@ public class Todoist {
         }
     }
 
+    public void updateTask(long id, String content, Long projectId, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id)
+                    .header("Content-Type", "application/json")
+                    .body(JsonAdapters.writeTaskRequest(new TaskRequest(content, projectId, null, labelIds, priority, dueString, dueDate, dueDateTime, dueLang)))
+                    .asString();
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeTask(long id) {
         try {
             HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id + "/close")
