@@ -46,17 +46,50 @@ public class Todoist {
                 .build();
 
         Moshi moshi = new Moshi.Builder().build();
+
         JsonAdapter<Project[]> jsonAdapter = moshi.adapter(Project[].class);
 
         try {
             Response response = httpClient.newCall(request).execute();
             if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
             String responseBody = response.body().string();
-            System.out.println(responseBody);
             return Arrays.asList(jsonAdapter.fromJson(responseBody));
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    public Project getProject(long id) {
+        Request request = new Request.Builder()
+                .get()
+                .url(URL_BASE + "/projects/" + id)
+                .build();
+
+        Moshi moshi = new Moshi.Builder().build();
+
+        JsonAdapter<Project> jsonAdapter = moshi.adapter(Project.class);
+
+        try {
+            Response response = httpClient.newCall(request).execute();
+            if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
+            String responseBody = response.body().string();
+            return jsonAdapter.fromJson(responseBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Project createNewProject(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Project updateProject(long id, String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void deleteProject(long id) {
+        throw new UnsupportedOperationException();
     }
 }

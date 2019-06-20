@@ -4,11 +4,11 @@ import com.squareup.moshi.Json;
 
 public class Project {
 
-    private final long id;
-    private final String name;
-    private final int order;
-    private final int indent;
-    @Json(name = "comment_count") private final int commentCount;
+    public final long id;
+    public final String name;
+    public final int order;
+    public final int indent;
+    @Json(name = "comment_count") public final int commentCount;
 
     public Project(int id, String name, int order, int indent, int commentCount) {
         this.id = id;
