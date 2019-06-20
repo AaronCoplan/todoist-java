@@ -1,12 +1,14 @@
 package com.aaroncoplan.todoist.model;
 
+import com.squareup.moshi.Json;
+
 public class Project {
 
     private final long id;
     private final String name;
     private final int order;
     private final int indent;
-    private final int commentCount;
+    @Json(name = "comment_count") private final int commentCount;
 
     public Project(int id, String name, int order, int indent, int commentCount) {
         this.id = id;
@@ -18,12 +20,12 @@ public class Project {
 
     @Override
     public String toString() {
-        return "{\n" +
-                "    \"id\": " + id + ",\n" +
-                "    \"name\": \"" + name + "\",\n" +
-                "    \"order\": " + order + ",\n" +
-                "    \"indent\": " + indent + ",\n" +
-                "    \"commentCount\": " + commentCount + "\n" +
-                "}";
+        return "Project{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", order=" + order +
+                ", indent=" + indent +
+                ", commentCount=" + commentCount +
+                '}';
     }
 }
