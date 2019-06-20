@@ -7,12 +7,12 @@ public class CommentRequest {
     @Json(name = "task_id") public final Long taskId;
     @Json(name = "project_id") public final Long projectId;
     public final String content;
-    public final AttachmentRequest attachmentRequest;
+    public final AttachmentRequest attachment;
 
-    public CommentRequest(Long taskId, Long projectId, String content, AttachmentRequest attachmentRequest) {
+    public CommentRequest(Long taskId, Long projectId, String content, AttachmentRequest attachment) {
         this.taskId = taskId;
         this.projectId = projectId;
         this.content = content;
-        this.attachmentRequest = attachmentRequest;
+        this.attachment = attachment;
     }
 }

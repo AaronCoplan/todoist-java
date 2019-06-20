@@ -1,13 +1,7 @@
 package com.aaroncoplan.todoist;
 
-import com.aaroncoplan.todoist.helpers.CommentRequest;
-import com.aaroncoplan.todoist.helpers.LabelRequest;
-import com.aaroncoplan.todoist.helpers.ProjectRequest;
-import com.aaroncoplan.todoist.helpers.TaskRequest;
-import com.aaroncoplan.todoist.model.Comment;
-import com.aaroncoplan.todoist.model.Label;
-import com.aaroncoplan.todoist.model.Project;
-import com.aaroncoplan.todoist.model.Task;
+import com.aaroncoplan.todoist.helpers.*;
+import com.aaroncoplan.todoist.model.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
@@ -315,11 +309,11 @@ public class Todoist {
         }
     }
 
-    private Comment createNewComment(Long taskId, Long projectId, String content) {
+    private Comment createNewComment(Long taskId, Long projectId, String content, AttachmentRequest attachmentRequest) {
         try {
             HttpResponse<String> response = Unirest.post(URL_BASE + "/comments")
                     .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(taskId, projectId, content, null)))
+                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(taskId, projectId, content, attachmentRequest)))
                     .asString();
             if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
@@ -332,10 +326,18 @@ public class Todoist {
     }
 
     public Comment createNewCommentForTask(long id, String content) {
-        return createNewComment(id, null, content);
+        return createNewComment(id, null, content, null);
+    }
+
+    public Comment createNewCommentForTask(long id, String content, AttachmentRequest attachmentRequest) {
+        return createNewComment(id, null, content, attachmentRequest);
     }
 
     public Comment createNewCommentForProject(long id, String content) {
-        return createNewComment(null, id, content);
+        return createNewComment(null, id, content, null);
+    }
+
+    public Comment createNewCommentForProject(long id, String content, AttachmentRequest attachmentRequest) {
+        return createNewComment(null, id, content, attachmentRequest);
     }
 }
