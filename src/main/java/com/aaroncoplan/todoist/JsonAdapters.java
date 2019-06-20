@@ -1,6 +1,7 @@
 package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
+import com.aaroncoplan.todoist.helpers.TaskRequest;
 import com.aaroncoplan.todoist.model.Project;
 import com.aaroncoplan.todoist.model.Task;
 import com.squareup.moshi.JsonAdapter;
@@ -20,6 +21,7 @@ public class JsonAdapters {
 
     private static final JsonAdapter<Task[]> taskArrayJsonAdapter = moshi.adapter(Task[].class);
     private static final JsonAdapter<Task> taskJsonAdapter = moshi.adapter(Task.class);
+    private static final JsonAdapter<TaskRequest> taskRequestJsonAdapter = moshi.adapter(TaskRequest.class);
 
     public static List<Project> extractProjectList(String json) throws IOException {
         return Arrays.asList(projectArrayJsonAdapter.fromJson(json));
@@ -39,5 +41,9 @@ public class JsonAdapters {
 
     public static Task extractTask(String json) throws IOException {
         return taskJsonAdapter.fromJson(json);
+    }
+
+    public static String writeTaskRequest(TaskRequest taskRequest) {
+        return taskRequestJsonAdapter.toJson(taskRequest);
     }
  }

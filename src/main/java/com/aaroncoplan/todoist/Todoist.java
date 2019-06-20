@@ -1,6 +1,7 @@
 package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
+import com.aaroncoplan.todoist.helpers.TaskRequest;
 import com.aaroncoplan.todoist.model.Project;
 import com.aaroncoplan.todoist.model.Task;
 import com.mashape.unirest.http.HttpResponse;
@@ -126,6 +127,30 @@ public class Todoist {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private Task createTask(TaskRequest taskRequest) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks")
+                    .header("Content-Type", "application/json")
+                    .body(JsonAdapters.writeTaskRequest(taskRequest))
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractTask(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Task createTask(String content) {
+        return createTask(new TaskRequest(content, null, null, null, null, null, null, null, null));
+    }
+
+    public Task createTask(String content, Long projectId, Integer order, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) {
+        return createTask(new TaskRequest(content, projectId, order, labelIds, priority, dueString, dueDate, dueDateTime, dueLang));
     }
 
     public Task getActiveTask(long id) {
