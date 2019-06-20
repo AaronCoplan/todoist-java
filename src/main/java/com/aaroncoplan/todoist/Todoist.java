@@ -141,4 +141,16 @@ public class Todoist {
             return null;
         }
     }
+
+    public void closeTask(long id) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id + "/close")
+                    .asString();
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
