@@ -2,7 +2,7 @@ package com.aaroncoplan.todoist.model;
 
 public class Project {
 
-    private final int id;
+    private final long id;
     private final String name;
     private final int order;
     private final int indent;

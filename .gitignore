@@ -3,7 +3,11 @@
 
 # Ignore Gradle build output directory
 build
+out/
 
 # IntelliJ files
 .idea/
 *.iml
+
+# Testing File with API Key
+KeyTest.java

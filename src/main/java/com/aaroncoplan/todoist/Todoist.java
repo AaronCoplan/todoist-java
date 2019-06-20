@@ -1,10 +1,16 @@
 package com.aaroncoplan.todoist;
 
+import com.aaroncoplan.todoist.model.Project;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class Todoist {
 
@@ -30,17 +36,21 @@ public class Todoist {
         this.httpClient = httpClient;
     }
 
-    public void getAllProjects() {
+    public List<Project> getAllProjects() {
         Request request = new Request.Builder()
                 .get()
                 .url(URL_BASE + "/projects")
                 .build();
 
+        Moshi moshi = new Moshi.Builder().build();
+        JsonAdapter<Project[]> jsonAdapter = moshi.adapter(Project[].class);
+
         try {
             Response response = httpClient.newCall(request).execute();
-            System.out.println(response.body().string());
+            return Arrays.asList(jsonAdapter.fromJson(response.body().string()));
         } catch (Exception e) {
             e.printStackTrace();
+            return Collections.emptyList();
         }
     }
 }
