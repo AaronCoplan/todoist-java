@@ -1,5 +1,6 @@
 package com.aaroncoplan.todoist;
 
+import com.aaroncoplan.todoist.helpers.LabelRequest;
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.helpers.TaskRequest;
 import com.aaroncoplan.todoist.model.Label;
@@ -26,6 +27,7 @@ public class JsonAdapters {
 
     private static final JsonAdapter<Label[]> labelArrayJsonAdaper = moshi.adapter(Label[].class);
     private static final JsonAdapter<Label> labelJsonAdapter = moshi.adapter(Label.class);
+    private static final JsonAdapter<LabelRequest> labelRequestJsonAdapter = moshi.adapter(LabelRequest.class);
 
     public static List<Project> extractProjectList(String json) throws IOException {
         return Arrays.asList(projectArrayJsonAdapter.fromJson(json));
@@ -57,5 +59,9 @@ public class JsonAdapters {
 
     public static Label extractLabel(String json) throws IOException {
         return labelJsonAdapter.fromJson(json);
+    }
+
+    public static String writeLabelRequest(LabelRequest labelRequest) {
+        return labelRequestJsonAdapter.toJson(labelRequest);
     }
 }
