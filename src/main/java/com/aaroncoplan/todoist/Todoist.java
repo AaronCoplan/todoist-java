@@ -3,25 +3,20 @@ package com.aaroncoplan.todoist;
 import com.aaroncoplan.todoist.model.Project;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class Todoist {
 
-    private final int OK = 200;
-    private final int OK_NO_DATA = 204;
-
     private final String URL_BASE = "https://beta.todoist.com/API/v8";
     private final String token;
-    private final OkHttpClient httpClient;
+    private final RequestExecutor requestExecutor;
 
     public Todoist(String token) {
         this.token = token;
-        this.httpClient = new OkHttpClient.Builder()
+        this.requestExecutor = new RequestExecutor(new OkHttpClient.Builder()
                 .addInterceptor(chain -> chain.proceed(chain.request()
                         .newBuilder()
                         .addHeader("Authorization", String.format("Bearer %s", token))
@@ -29,12 +24,12 @@ public class Todoist {
                         .build()))
                 .followRedirects(false)
                 .callTimeout(Duration.ofSeconds(20))
-                .build();
+                .build());
     }
 
     public Todoist(String token, OkHttpClient httpClient) {
         this.token = token;
-        this.httpClient = httpClient;
+        this.requestExecutor = new RequestExecutor(httpClient);
     }
 
     public List<Project> getAllProjects() {
@@ -44,9 +39,7 @@ public class Todoist {
                 .build();
 
         try {
-            Response response = httpClient.newCall(request).execute();
-            if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
-            String responseBody = response.body().string();
+            String responseBody = requestExecutor.execute(request);
             return JsonAdapters.extractProjectList(responseBody);
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,9 +54,7 @@ public class Todoist {
                 .build();
 
         try {
-            Response response = httpClient.newCall(request).execute();
-            if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
-            String responseBody = response.body().string();
+            String responseBody = requestExecutor.execute(request);
             return JsonAdapters.extractProject(responseBody);
         } catch (Exception e) {
             e.printStackTrace();
