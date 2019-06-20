@@ -368,4 +368,16 @@ public class Todoist {
             e.printStackTrace();
         }
     }
+
+    public void deleteComment(long id) {
+        try {
+            HttpResponse<String> response = Unirest.delete(URL_BASE + "/comments/" + id)
+                    .asString();
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
