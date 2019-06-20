@@ -354,4 +354,18 @@ public class Todoist {
             return null;
         }
     }
+
+    public void updateComment(long id, String content) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/comments/" + id)
+                    .header("Content-Type", "application/json")
+                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(null, null, content, null)))
+                    .asString();
+            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
