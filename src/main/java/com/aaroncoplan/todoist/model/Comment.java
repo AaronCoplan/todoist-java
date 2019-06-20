@@ -9,13 +9,15 @@ public class Comment {
     @Json(name = "project_id") public final Long projectId;
     public final String posted;
     public final String content;
+    public final Attachment attachment;
 
-    public Comment(Long id, Long taskId, Long projectId, String posted, String content) {
+    public Comment(Long id, Long taskId, Long projectId, String posted, String content, Attachment attachment) {
         this.id = id;
         this.taskId = taskId;
         this.projectId = projectId;
         this.posted = posted;
         this.content = content;
+        this.attachment = attachment;
     }
 
     @Override
@@ -26,6 +28,7 @@ public class Comment {
                 ", projectId=" + projectId +
                 ", posted='" + posted + '\'' +
                 ", content='" + content + '\'' +
+                ", attachment=" + attachment +
                 '}';
     }
 }

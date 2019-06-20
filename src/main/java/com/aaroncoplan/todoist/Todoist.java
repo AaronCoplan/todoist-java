@@ -3,6 +3,7 @@ package com.aaroncoplan.todoist;
 import com.aaroncoplan.todoist.helpers.LabelRequest;
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.helpers.TaskRequest;
+import com.aaroncoplan.todoist.model.Comment;
 import com.aaroncoplan.todoist.model.Label;
 import com.aaroncoplan.todoist.model.Project;
 import com.aaroncoplan.todoist.model.Task;
@@ -278,6 +279,38 @@ public class Todoist {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<Comment> getAllCommentsForProject(long id) {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
+                    .queryString("project_id", id)
+                    .asString();
+            System.out.println(response.getBody());
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractCommentList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Comment> getAllCommentsForTask(long id) {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
+                    .queryString("task_id", id)
+                    .asString();
+            System.out.println(response.getBody());
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractCommentList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
