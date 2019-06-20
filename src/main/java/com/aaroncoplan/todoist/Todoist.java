@@ -1,8 +1,6 @@
 package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.model.Project;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -45,15 +43,11 @@ public class Todoist {
                 .url(URL_BASE + "/projects")
                 .build();
 
-        Moshi moshi = new Moshi.Builder().build();
-
-        JsonAdapter<Project[]> jsonAdapter = moshi.adapter(Project[].class);
-
         try {
             Response response = httpClient.newCall(request).execute();
             if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
             String responseBody = response.body().string();
-            return Arrays.asList(jsonAdapter.fromJson(responseBody));
+            return JsonAdapters.extractProjectList(responseBody);
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -66,15 +60,11 @@ public class Todoist {
                 .url(URL_BASE + "/projects/" + id)
                 .build();
 
-        Moshi moshi = new Moshi.Builder().build();
-
-        JsonAdapter<Project> jsonAdapter = moshi.adapter(Project.class);
-
         try {
             Response response = httpClient.newCall(request).execute();
             if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
             String responseBody = response.body().string();
-            return jsonAdapter.fromJson(responseBody);
+            return JsonAdapters.extractProject(responseBody);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
