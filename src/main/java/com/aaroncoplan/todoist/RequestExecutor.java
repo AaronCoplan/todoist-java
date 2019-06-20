@@ -1,3 +1,4 @@
+/*
 package com.aaroncoplan.todoist;
 
 import okhttp3.OkHttpClient;
@@ -17,9 +18,11 @@ public class RequestExecutor {
 
     public String execute(Request request) throws Exception {
         Response response = httpClient.newCall(request).execute();
-        if(response.code() != OK && response.code() != OK_NO_DATA){
+        if(response.code() != OK && response.code() != OK_NO_DATA) {
+            System.out.println(response.body().string());
             throw new Exception("HTTP CODE " + response.code());
         }
         return response.body() != null ? response.body().string() : null;
     }
 }
+*/
