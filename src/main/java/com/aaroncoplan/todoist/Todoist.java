@@ -241,5 +241,17 @@ public class Todoist {
         }
     }
 
-
+    public Label getLabel(long id) {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/labels/" + id)
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractLabel(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
