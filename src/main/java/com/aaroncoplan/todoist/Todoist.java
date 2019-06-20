@@ -2,6 +2,7 @@ package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.helpers.TaskRequest;
+import com.aaroncoplan.todoist.model.Label;
 import com.aaroncoplan.todoist.model.Project;
 import com.aaroncoplan.todoist.model.Task;
 import com.mashape.unirest.http.HttpResponse;
@@ -202,6 +203,20 @@ public class Todoist {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public List<Label> getAllLabels() {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/labels")
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractLabelList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

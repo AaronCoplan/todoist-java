@@ -11,4 +11,13 @@ public class Label {
         this.name = name;
         this.order = order;
     }
+
+    @Override
+    public String toString() {
+        return "Label{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", order=" + order +
+                '}';
+    }
 }
