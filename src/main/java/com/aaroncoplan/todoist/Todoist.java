@@ -1,14 +1,16 @@
 package com.aaroncoplan.todoist;
 
+import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.model.Project;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
 
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
 public class Todoist {
+
+    public static final MediaType JSON = MediaType.parse("application/json");
 
     private final String URL_BASE = "https://beta.todoist.com/API/v8";
     private final String token;
@@ -63,11 +65,40 @@ public class Todoist {
     }
 
     public Project createNewProject(String name) {
-        throw new UnsupportedOperationException();
+        String url = HttpUrl.parse(URL_BASE)
+                .newBuilder()
+                .addPathSegment("projects")
+                .addQueryParameter("name", name)
+                .build()
+                .toString();
+
+        Request request = new Request.Builder()
+                .post(RequestBody.create(JSON, JsonAdapters.writeProjectRequest(new ProjectRequest(name))))
+                .url(url)
+                .build();
+
+        try {
+            String responseBody = requestExecutor.execute(request);
+            return JsonAdapters.extractProject(responseBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Project updateProject(long id, String name) {
-        throw new UnsupportedOperationException();
+        Request request = new Request.Builder()
+                .post(RequestBody.create(JSON, JsonAdapters.writeProjectRequest(new ProjectRequest(name))))
+                .url(URL_BASE + "/projects/" + id)
+                .build();
+
+        try {
+            String responseBody = requestExecutor.execute(request);
+            return JsonAdapters.extractProject(responseBody);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void deleteProject(long id) {
