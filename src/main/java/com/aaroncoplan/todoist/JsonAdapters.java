@@ -19,6 +19,7 @@ public class JsonAdapters {
     private static final JsonAdapter<ProjectRequest> projectRequestJsonAdapter = moshi.adapter(ProjectRequest.class);
 
     private static final JsonAdapter<Task[]> taskArrayJsonAdapter = moshi.adapter(Task[].class);
+    private static final JsonAdapter<Task> taskJsonAdapter = moshi.adapter(Task.class);
 
     public static List<Project> extractProjectList(String json) throws IOException {
         return Arrays.asList(projectArrayJsonAdapter.fromJson(json));
@@ -34,5 +35,9 @@ public class JsonAdapters {
 
     public static List<Task> extractTaskList(String json) throws IOException {
         return Arrays.asList(taskArrayJsonAdapter.fromJson(json));
+    }
+
+    public static Task extractTask(String json) throws IOException {
+        return taskJsonAdapter.fromJson(json);
     }
  }

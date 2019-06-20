@@ -6,7 +6,9 @@ import com.aaroncoplan.todoist.model.Task;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Todoist {
 
@@ -105,7 +107,38 @@ public class Todoist {
         }
     }
 
-    /*public List<Task> getActiveTasks(Long projectId, Long labelId, String filter, String lang) {
+    public List<Task> getActiveTasks(Long projectId, Long labelId, String filter, String lang) {
+        try {
+            Map<String, Object> params = new HashMap<>();
+            if(projectId != null) params.put("project_id", projectId);
+            if(labelId != null) params.put("label_id", labelId);
+            if(filter != null) params.put("filter", filter);
+            if(lang != null) params.put("lang", lang);
 
-    }*/
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
+                    .queryString(params)
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractTaskList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Task getActiveTask(long id) {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks/" + id)
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+            return JsonAdapters.extractTask(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
