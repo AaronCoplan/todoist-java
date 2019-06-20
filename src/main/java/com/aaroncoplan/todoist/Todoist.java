@@ -14,6 +14,9 @@ import java.util.List;
 
 public class Todoist {
 
+    private final int OK = 200;
+    private final int OK_NO_DATA = 204;
+
     private final String URL_BASE = "https://beta.todoist.com/API/v8";
     private final String token;
     private final OkHttpClient httpClient;
@@ -47,7 +50,10 @@ public class Todoist {
 
         try {
             Response response = httpClient.newCall(request).execute();
-            return Arrays.asList(jsonAdapter.fromJson(response.body().string()));
+            if(response.code() != OK && response.code() != OK_NO_DATA) throw new Exception("HTTP CODE " + response.code());
+            String responseBody = response.body().string();
+            System.out.println(responseBody);
+            return Arrays.asList(jsonAdapter.fromJson(responseBody));
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();

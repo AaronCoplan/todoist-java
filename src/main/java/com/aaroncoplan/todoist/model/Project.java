@@ -15,4 +15,15 @@ public class Project {
         this.indent = indent;
         this.commentCount = commentCount;
     }
+
+    @Override
+    public String toString() {
+        return "{\n" +
+                "    \"id\": " + id + ",\n" +
+                "    \"name\": \"" + name + "\",\n" +
+                "    \"order\": " + order + ",\n" +
+                "    \"indent\": " + indent + ",\n" +
+                "    \"commentCount\": " + commentCount + "\n" +
+                "}";
+    }
 }
