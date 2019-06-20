@@ -2,6 +2,7 @@ package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.helpers.ProjectRequest;
 import com.aaroncoplan.todoist.model.Project;
+import com.aaroncoplan.todoist.model.Task;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
@@ -88,4 +89,23 @@ public class Todoist {
             e.printStackTrace();
         }
     }
+
+    public List<Task> getActiveTasks() {
+        try {
+            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+
+            return JsonAdapters.extractTaskList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /*public List<Task> getActiveTasks(Long projectId, Long labelId, String filter, String lang) {
+
+    }*/
 }
