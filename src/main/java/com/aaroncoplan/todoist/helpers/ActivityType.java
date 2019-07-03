@@ -2,6 +2,7 @@ package com.aaroncoplan.todoist.helpers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public enum ActivityType {
     ALL("item:", "note:added"),
@@ -17,5 +18,9 @@ public enum ActivityType {
 
     ActivityType(String... vals) {
         this.vals = Arrays.asList(vals);
+    }
+
+    public Stream<String> getStream() {
+        return vals.stream();
     }
 }

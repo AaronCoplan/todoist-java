@@ -5,10 +5,8 @@ import com.aaroncoplan.todoist.model.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Todoist {
 
@@ -381,37 +379,40 @@ public class Todoist {
     }
 
     public List<Activity> getActivityForTask(long id) {
+        return getActivityForTask(id, ActivityType.ALL);
+    }
+
+    public List<Activity> getActivityForTask(long id, ActivityType... types) {
         try {
             int limit = 30;
             int offset = 0;
             int count;
 
+            List<String> activityTypes = Arrays.stream(types)
+                    .flatMap(ActivityType::getStream)
+                    .collect(Collectors.toList());
+
+            List<Activity> activityList = new ArrayList<>();
             do {
                 HttpResponse<String> response = Unirest.post("https://todoist.com/API/v8/activity/get")
                         .header("Content-Type", "application/json")
-                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, Arrays.asList("item:", "note:added"), id, true, true)))
+                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, activityTypes, id, true, true)))
                         .asString();
                 if (response.getStatus() != HTTP_OK) {
-                    System.out.println(response.getBody());
                     throw new Exception("HTTP STATUS " + response.getStatus());
                 }
-                System.out.println(response.getBody());
+
                 ActivityResponse activityResponse = JsonAdapters.extractActivityResponse(response.getBody());
+                activityList.addAll(activityResponse.events);
+
                 count = activityResponse.count;
-
-                activityResponse.events.forEach(System.out::println);
-
                 offset += limit;
             } while(offset < count);
 
-            return null;
+            return activityList;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public List<Activity> getActivityForTask(long id, ActivityType... types) {
-        return null;
     }
 }
