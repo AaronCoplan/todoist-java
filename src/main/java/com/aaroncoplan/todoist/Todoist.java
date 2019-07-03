@@ -5,6 +5,7 @@ import com.aaroncoplan.todoist.model.*;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -282,7 +283,6 @@ public class Todoist {
             HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
                     .queryString("project_id", id)
                     .asString();
-            System.out.println(response.getBody());
             if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
@@ -298,7 +298,6 @@ public class Todoist {
             HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
                     .queryString("task_id", id)
                     .asString();
-            System.out.println(response.getBody());
             if(response.getStatus() != HTTP_OK) {
                 throw new Exception("HTTP STATUS " + response.getStatus());
             }
@@ -379,5 +378,24 @@ public class Todoist {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public List<Activity> getActivityForTask(long id) {
+        try {
+            HttpResponse<String> response = Unirest.post(URL_BASE + "/activity/get")
+                    .header("Content-Type", "application/json")
+                    .body(new ActivityRequest(30, 0, Arrays.asList("item:", "note:added"), id))
+                    .asString();
+            if(response.getStatus() != HTTP_OK) {
+                throw new Exception("HTTP STATUS " + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Activity> getActivityForTask(long id, ActivityType... types) {
+
     }
 }
