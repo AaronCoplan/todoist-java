@@ -378,6 +378,44 @@ public class Todoist {
         }
     }
 
+    public List<Activity> getActivityForProject(long id) {
+        return getActivityForProject(id, ActivityType.ALL);
+    }
+
+    public List<Activity> getActivityForProject(long id, ActivityType... types) {
+        try {
+            int limit = 30;
+            int offset = 0;
+            int count;
+
+            List<String> activityTypes = Arrays.stream(types)
+                    .flatMap(ActivityType::getStream)
+                    .collect(Collectors.toList());
+
+            List<Activity> activityList = new ArrayList<>();
+            do {
+                HttpResponse<String> response = Unirest.post("https://todoist.com/API/v8/activity/get")
+                        .header("Content-Type", "application/json")
+                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, activityTypes, null, null, true, id, true)))
+                        .asString();
+                if (response.getStatus() != HTTP_OK) {
+                    throw new Exception("HTTP STATUS " + response.getStatus());
+                }
+
+                ActivityResponse activityResponse = JsonAdapters.extractActivityResponse(response.getBody());
+                activityList.addAll(activityResponse.events);
+
+                count = activityResponse.count;
+                offset += limit;
+            } while(offset < count);
+
+            return activityList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<Activity> getActivityForTask(long id) {
         return getActivityForTask(id, ActivityType.ALL);
     }
@@ -396,7 +434,7 @@ public class Todoist {
             do {
                 HttpResponse<String> response = Unirest.post("https://todoist.com/API/v8/activity/get")
                         .header("Content-Type", "application/json")
-                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, activityTypes, id, true, true)))
+                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, activityTypes, id, true, true, null, null)))
                         .asString();
                 if (response.getStatus() != HTTP_OK) {
                     throw new Exception("HTTP STATUS " + response.getStatus());
