@@ -6,7 +6,7 @@ public class Due {
 
     public final String date;
     @Json(name = "recurring") public final boolean isRecurring;
-    public final String dateTime;
+    @Json(name = "datetime") public final String dateTime;
     public final String string;
     public final String timezone;
 
