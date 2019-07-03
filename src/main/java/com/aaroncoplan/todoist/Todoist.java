@@ -387,17 +387,9 @@ public class Todoist {
             int count;
 
             do {
-                System.out.println(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, Arrays.asList("item:", "note:added"), id, true, true)));
                 HttpResponse<String> response = Unirest.post("https://todoist.com/API/v8/activity/get")
                         .header("Content-Type", "application/json")
                         .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, Arrays.asList("item:", "note:added"), id, true, true)))
-                        /*.header("content-type", "application/x-www-form-urlencoded")
-                        .queryString("limit", limit)
-                        .queryString("offset", offset)
-                        .queryString("object_event_types", "[\"item:\", \"note:added\"]")
-                        .queryString("parent_item_id", id)
-                        .queryString("include_parent_object", true)
-                        .queryString("annotate_notes", true)*/
                         .asString();
                 if (response.getStatus() != HTTP_OK) {
                     System.out.println(response.getBody());
