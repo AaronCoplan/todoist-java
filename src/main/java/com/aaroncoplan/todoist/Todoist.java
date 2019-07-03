@@ -382,13 +382,37 @@ public class Todoist {
 
     public List<Activity> getActivityForTask(long id) {
         try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/activity/get")
-                    .header("Content-Type", "application/json")
-                    .body(new ActivityRequest(30, 0, Arrays.asList("item:", "note:added"), id))
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
+            int limit = 30;
+            int offset = 0;
+            int count;
+
+            do {
+                System.out.println(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, Arrays.asList("item:", "note:added"), id, true, true)));
+                HttpResponse<String> response = Unirest.post("https://todoist.com/API/v8/activity/get")
+                        .header("Content-Type", "application/json")
+                        .body(JsonAdapters.writeActivityRequest(new ActivityRequest(limit, offset, Arrays.asList("item:", "note:added"), id, true, true)))
+                        /*.header("content-type", "application/x-www-form-urlencoded")
+                        .queryString("limit", limit)
+                        .queryString("offset", offset)
+                        .queryString("object_event_types", "[\"item:\", \"note:added\"]")
+                        .queryString("parent_item_id", id)
+                        .queryString("include_parent_object", true)
+                        .queryString("annotate_notes", true)*/
+                        .asString();
+                if (response.getStatus() != HTTP_OK) {
+                    System.out.println(response.getBody());
+                    throw new Exception("HTTP STATUS " + response.getStatus());
+                }
+                System.out.println(response.getBody());
+                ActivityResponse activityResponse = JsonAdapters.extractActivityResponse(response.getBody());
+                count = activityResponse.count;
+
+                activityResponse.events.forEach(System.out::println);
+
+                offset += limit;
+            } while(offset < count);
+
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -396,6 +420,6 @@ public class Todoist {
     }
 
     public List<Activity> getActivityForTask(long id, ActivityType... types) {
-
+        return null;
     }
 }
