@@ -1,9 +1,6 @@
 package com.aaroncoplan.todoist;
 
-import com.aaroncoplan.todoist.helpers.CommentRequest;
-import com.aaroncoplan.todoist.helpers.LabelRequest;
-import com.aaroncoplan.todoist.helpers.ProjectRequest;
-import com.aaroncoplan.todoist.helpers.TaskRequest;
+import com.aaroncoplan.todoist.helpers.*;
 import com.aaroncoplan.todoist.model.Comment;
 import com.aaroncoplan.todoist.model.Label;
 import com.aaroncoplan.todoist.model.Project;
@@ -34,6 +31,9 @@ public class JsonAdapters {
     private static final JsonAdapter<Comment[]> commentArrayJsonAdapter = moshi.adapter(Comment[].class);
     private static final JsonAdapter<Comment> commentJsonAdapter = moshi.adapter(Comment.class);
     private static final JsonAdapter<CommentRequest> commentRequestJsonAdapter = moshi.adapter(CommentRequest.class);
+
+    private static final JsonAdapter<ActivityResponse> activityResponseJsonAdapter = moshi.adapter(ActivityResponse.class);
+    private static final JsonAdapter<ActivityRequest> activityRequestJsonAdapter = moshi.adapter(ActivityRequest.class);
 
     public static List<Project> extractProjectList(String json) throws IOException {
         return Arrays.asList(projectArrayJsonAdapter.fromJson(json));
@@ -81,5 +81,13 @@ public class JsonAdapters {
 
     public static String writeCommentRequest(CommentRequest commentRequest) {
         return commentRequestJsonAdapter.toJson(commentRequest);
+    }
+
+    public static ActivityResponse extractActivityResponse(String json) throws IOException {
+        return activityResponseJsonAdapter.fromJson(json);
+    }
+
+    public static String writeActivityRequest(ActivityRequest activityRequest) {
+        return activityRequestJsonAdapter.toJson(activityRequest);
     }
 }
