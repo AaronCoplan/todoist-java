@@ -5,6 +5,7 @@ import com.aaroncoplan.todoist.model.*;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,18 +23,23 @@ public class Todoist {
                 .addDefaultHeader("Authorization", String.format("Bearer %s", token));
     }
 
-    public List<Project> getAllProjects() {
+    public <T> T extract(CheckedFunction<String, T> extractionFunction, HttpResponse<String> httpResponse) throws TodoistException {
         try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/projects")
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractProjectList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            return extractionFunction.apply(httpResponse.getBody());
+        } catch (IOException e) {
+            throw new TodoistException("Error mapping JSON to Object");
         }
+    }
+
+    public interface CheckedFunction<P, R> {
+        R apply(P t) throws IOException;
+    }
+
+    public List<Project> getAllProjects() throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/projects")
+                .asString();
+        if (response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractProjectList, response);
     }
 
     public Project getProject(long id) {
