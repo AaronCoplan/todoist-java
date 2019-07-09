@@ -251,6 +251,7 @@ public class Todoist {
 
         List<String> activityTypes = Arrays.stream(types)
                 .flatMap(ActivityType::getStream)
+                .distinct()
                 .collect(Collectors.toList());
 
         List<Activity> activityList = new ArrayList<>();
@@ -282,6 +283,7 @@ public class Todoist {
 
         List<String> activityTypes = Arrays.stream(types)
                 .flatMap(ActivityType::getStream)
+                .distinct()
                 .collect(Collectors.toList());
 
         List<Activity> activityList = new ArrayList<>();
