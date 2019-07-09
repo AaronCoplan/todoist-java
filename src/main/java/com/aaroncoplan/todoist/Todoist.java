@@ -178,106 +178,66 @@ public class Todoist {
         if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public List<Comment> getAllCommentsForProject(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
-                    .queryString("project_id", id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractCommentList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<Comment> getAllCommentsForProject(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
+                .queryString("project_id", id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractCommentList, response);
     }
 
-    public List<Comment> getAllCommentsForTask(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
-                    .queryString("task_id", id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractCommentList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<Comment> getAllCommentsForTask(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/comments")
+                .queryString("task_id", id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractCommentList, response);
     }
 
-    private Comment createNewComment(Long taskId, Long projectId, String content, AttachmentRequest attachmentRequest) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/comments")
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(taskId, projectId, content, attachmentRequest)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractComment(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Comment createNewComment(Long taskId, Long projectId, String content, AttachmentRequest attachmentRequest) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/comments")
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeCommentRequest(new CommentRequest(taskId, projectId, content, attachmentRequest)))
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractComment, response);
     }
 
-    public Comment createNewCommentForTask(long id, String content) {
+    public Comment createNewCommentForTask(long id, String content) throws TodoistException {
         return createNewComment(id, null, content, null);
     }
 
-    public Comment createNewCommentForTask(long id, String content, AttachmentRequest attachmentRequest) {
+    public Comment createNewCommentForTask(long id, String content, AttachmentRequest attachmentRequest) throws TodoistException {
         return createNewComment(id, null, content, attachmentRequest);
     }
 
-    public Comment createNewCommentForProject(long id, String content) {
+    public Comment createNewCommentForProject(long id, String content) throws TodoistException {
         return createNewComment(null, id, content, null);
     }
 
-    public Comment createNewCommentForProject(long id, String content, AttachmentRequest attachmentRequest) {
+    public Comment createNewCommentForProject(long id, String content, AttachmentRequest attachmentRequest) throws TodoistException {
         return createNewComment(null, id, content, attachmentRequest);
     }
 
-    public Comment getComment(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/comments/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractComment(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Comment getComment(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/comments/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractComment, response);
     }
 
-    public void updateComment(long id, String content) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/comments/" + id)
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeCommentRequest(new CommentRequest(null, null, content, null)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void updateComment(long id, String content) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/comments/" + id)
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeCommentRequest(new CommentRequest(null, null, content, null)))
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public void deleteComment(long id) {
-        try {
-            HttpResponse<String> response = Unirest.delete(URL_BASE + "/comments/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void deleteComment(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.delete(URL_BASE + "/comments/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
     public List<Activity> getActivityForProject(long id) {
