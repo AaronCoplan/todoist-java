@@ -2,8 +2,8 @@ package com.aaroncoplan.todoist;
 
 import com.aaroncoplan.todoist.helpers.*;
 import com.aaroncoplan.todoist.model.*;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,8 +16,10 @@ public class Todoist {
     private final String URL_BASE = "https://beta.todoist.com/API/v8";
 
     public Todoist(String token) {
-        Unirest.setTimeouts(20_000, 20_000);
-        Unirest.setDefaultHeader("Authorization", String.format("Bearer %s", token));
+        Unirest.config()
+                .connectTimeout(20_000)
+                .socketTimeout(20_000)
+                .addDefaultHeader("Authorization", String.format("Bearer %s", token));
     }
 
     public List<Project> getAllProjects() {
