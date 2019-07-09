@@ -23,7 +23,7 @@ public class Todoist {
                 .addDefaultHeader("Authorization", String.format("Bearer %s", token));
     }
 
-    public <T> T extract(CheckedFunction<String, T> extractionFunction, HttpResponse<String> httpResponse) throws TodoistException {
+    private <T> T extract(CheckedFunction<String, T> extractionFunction, HttpResponse<String> httpResponse) throws TodoistException {
         try {
             return extractionFunction.apply(httpResponse.getBody());
         } catch (IOException e) {
@@ -31,7 +31,7 @@ public class Todoist {
         }
     }
 
-    public interface CheckedFunction<P, R> {
+    private interface CheckedFunction<P, R> {
         R apply(P t) throws IOException;
     }
 
