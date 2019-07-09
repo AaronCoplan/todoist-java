@@ -137,78 +137,45 @@ public class Todoist {
         if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public List<Label> getAllLabels() {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/labels")
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractLabelList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<Label> getAllLabels() throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/labels")
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractLabelList, response);
     }
 
-    public Label createNewLabel(String name) {
+    public Label createNewLabel(String name) throws TodoistException {
         return createNewLabel(name, null);
     }
 
-    public Label createNewLabel(String name, Integer order) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/labels")
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeLabelRequest(new LabelRequest(name, order)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractLabel(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Label createNewLabel(String name, Integer order) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/labels")
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeLabelRequest(new LabelRequest(name, order)))
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractLabel, response);
     }
 
-    public Label getLabel(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/labels/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractLabel(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Label getLabel(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/labels/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractLabel, response);
     }
 
-    public void updateLabel(long id, String name, Integer order) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/labels/" + id)
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeLabelRequest(new LabelRequest(name, order)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void updateLabel(long id, String name, Integer order) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/labels/" + id)
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeLabelRequest(new LabelRequest(name, order)))
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public void deleteLabel(long id) {
-        try {
-            HttpResponse<String> response = Unirest.delete(URL_BASE + "/labels/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void deleteLabel(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.delete(URL_BASE + "/labels/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
     public List<Comment> getAllCommentsForProject(long id) {
