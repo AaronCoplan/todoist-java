@@ -42,60 +42,34 @@ public class Todoist {
         return extract(JsonAdapters::extractProjectList, response);
     }
 
-    public Project getProject(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/projects/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractProject(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Project getProject(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/projects/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractProject, response);
     }
 
-    public Project createNewProject(String name) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/projects")
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractProject(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Project createNewProject(String name) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/projects")
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractProject, response);
     }
 
-    public void updateProject(long id, String name) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/projects/" + id)
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void updateProject(long id, String name) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/projects/" + id)
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeProjectRequest(new ProjectRequest(name)))
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public void deleteProject(long id) {
-        try {
-            HttpResponse<String> response = Unirest.delete(URL_BASE + "/projects/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void deleteProject(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.delete(URL_BASE + "/projects/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
     public List<Task> getActiveTasks() {
