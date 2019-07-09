@@ -72,116 +72,69 @@ public class Todoist {
         if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public List<Task> getActiveTasks() {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-
-            return JsonAdapters.extractTaskList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public List<Task> getActiveTasks() throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractTaskList, response);
     }
 
-    public List<Task> getActiveTasks(Long projectId, Long labelId, String filter, String lang) {
-        try {
-            Map<String, Object> params = new HashMap<>();
-            if(projectId != null) params.put("project_id", projectId);
-            if(labelId != null) params.put("label_id", labelId);
-            if(filter != null) params.put("filter", filter);
-            if(lang != null) params.put("lang", lang);
+    public List<Task> getActiveTasks(Long projectId, Long labelId, String filter, String lang) throws TodoistException {
+        Map<String, Object> params = new HashMap<>();
+        if(projectId != null) params.put("project_id", projectId);
+        if(labelId != null) params.put("label_id", labelId);
+        if(filter != null) params.put("filter", filter);
+        if(lang != null) params.put("lang", lang);
 
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
-                    .queryString(params)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractTaskList(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks")
+                .queryString(params)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractTaskList, response);
     }
 
-    private Task createNewTask(TaskRequest taskRequest) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks")
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeTaskRequest(taskRequest))
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractTask(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    private Task createNewTask(TaskRequest taskRequest) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks")
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeTaskRequest(taskRequest))
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractTask, response);
     }
 
-    public Task createNewTask(String content) {
+    public Task createNewTask(String content) throws TodoistException {
         return createNewTask(new TaskRequest(content, null, null, null, null, null, null, null, null));
     }
 
-    public Task createNewTask(String content, Long projectId, Integer order, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) {
+    public Task createNewTask(String content, Long projectId, Integer order, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) throws TodoistException {
         return createNewTask(new TaskRequest(content, projectId, order, labelIds, priority, dueString, dueDate, dueDateTime, dueLang));
     }
 
-    public Task getActiveTask(long id) {
-        try {
-            HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-            return JsonAdapters.extractTask(response.getBody());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Task getActiveTask(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.get(URL_BASE + "/tasks/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK) throw new TodoistException(response.getStatus());
+        return extract(JsonAdapters::extractTask, response);
     }
 
-    public void updateTask(long id, String content, Long projectId, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id)
-                    .header("Content-Type", "application/json")
-                    .body(JsonAdapters.writeTaskRequest(new TaskRequest(content, projectId, null, labelIds, priority, dueString, dueDate, dueDateTime, dueLang)))
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void updateTask(long id, String content, Long projectId, List<Long> labelIds, Integer priority, String dueString, String dueDate, String dueDateTime, String dueLang) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id)
+                .header("Content-Type", "application/json")
+                .body(JsonAdapters.writeTaskRequest(new TaskRequest(content, projectId, null, labelIds, priority, dueString, dueDate, dueDateTime, dueLang)))
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public void closeTask(long id) {
-        try {
-            HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id + "/close")
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void closeTask(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.post(URL_BASE + "/tasks/" + id + "/close")
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
-    public void deleteTask(long id) {
-        try {
-            HttpResponse<String> response = Unirest.delete(URL_BASE + "/tasks/" + id)
-                    .asString();
-            if(response.getStatus() != HTTP_OK_NO_CONTENT) {
-                throw new Exception("HTTP STATUS " + response.getStatus());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void deleteTask(long id) throws TodoistException {
+        HttpResponse<String> response = Unirest.delete(URL_BASE + "/tasks/" + id)
+                .asString();
+        if(response.getStatus() != HTTP_OK_NO_CONTENT) throw new TodoistException(response.getStatus());
     }
 
     public List<Label> getAllLabels() {
